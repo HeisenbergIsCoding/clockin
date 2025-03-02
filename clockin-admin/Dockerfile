@@ -1,0 +1,19 @@
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /app
+
+# 複製整個專案
+COPY . .
+
+# 先構建父項目
+RUN mvn clean install -pl clockin-common -am -DskipTests
+
+# 構建 admin 模塊
+RUN mvn clean package -pl clockin-admin -am -DskipTests
+
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+COPY --from=build /app/clockin-admin/target/*.jar app.jar
+
+EXPOSE 8083
+ENTRYPOINT ["java", "-jar", "app.jar"]

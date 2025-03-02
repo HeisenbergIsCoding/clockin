@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # MySQL 資料庫服務
+  mysql:
+    image: mysql:8.0
+    container_name: clockin-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clockin
+      MYSQL_USER: clockin
+      MYSQL_PASSWORD: clockin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - clockin-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 緩存服務
+  redis:
+    image: redis:7.2
+    container_name: clockin-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - clockin-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 認證服務 (Auth)
+  clockin-auth:
+    build:
+      context: ./clockin-auth
+      dockerfile: Dockerfile
+    container_name: clockin-auth
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/clockin?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    ports:
+      - "8081:8081"
+    networks:
+      - clockin-network
+
+  # 打卡記錄服務 (Record)
+  clockin-record:
+    build:
+      context: ./clockin-record
+      dockerfile: Dockerfile
+    container_name: clockin-record
+    depends_on:
+      clockin-auth:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/clockin?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      CLOCK_IN_AUTH_BASEURL: http://clockin-auth:8081
+      CLOCK_IN_ADMIN_BASEURL: http://clockin-admin:8083
+    ports:
+      - "8082:8082"
+    networks:
+      - clockin-network
+
+  # 後台管理服務 (Admin)
+  clockin-admin:
+    build:
+      context: ./clockin-admin
+      dockerfile: Dockerfile
+    container_name: clockin-admin
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/clockin?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    ports:
+      - "8083:8083"
+    networks:
+      - clockin-network
+
+networks:
+  clockin-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
