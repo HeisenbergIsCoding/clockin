@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>clockin-record</artifactId>
-    <n>clockin-record</n>
+    <name>clockin-record</name>
     <description>打卡記錄模組</description>
 
     <dependencies>
@@ -85,4 +85,29 @@
             <artifactId>flyway-mysql</artifactId>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                    <mainClass>com.clockin.record.RecordApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

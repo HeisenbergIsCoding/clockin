@@ -34,6 +34,9 @@ spring:
     serialization:
       fail-on-empty-beans: false
       
+  main:
+    allow-bean-definition-overriding: true
+    
   # Flyway 配置
   flyway:
     enabled: true

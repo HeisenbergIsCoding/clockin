@@ -4,7 +4,7 @@ WORKDIR /app
 # 複製整個專案
 COPY . .
 
-# 先構建父項目
+# 先構建 common 模塊
 RUN mvn clean install -pl clockin-common -am -DskipTests
 
 # 構建 auth 模塊

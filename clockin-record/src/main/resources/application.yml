@@ -56,6 +56,9 @@ spring:
           max-active: 8
           max-wait: -1ms
 
+  main:
+    allow-bean-definition-overriding: true
+
 logging:
   level:
     root: info

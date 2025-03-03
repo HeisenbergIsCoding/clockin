@@ -4,7 +4,7 @@ services:
   # MySQL 資料庫服務
   mysql:
     image: mysql:8.0
-    container_name: clockin-mysql
+    container_name: clockin
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: clockin
@@ -41,8 +41,8 @@ services:
   # 認證服務 (Auth)
   clockin-auth:
     build:
-      context: ./clockin-auth
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./clockin-auth/Dockerfile
     container_name: clockin-auth
     depends_on:
       mysql:
@@ -63,8 +63,8 @@ services:
   # 打卡記錄服務 (Record)
   clockin-record:
     build:
-      context: ./clockin-record
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./clockin-record/Dockerfile
     container_name: clockin-record
     depends_on:
       clockin-auth:
@@ -89,8 +89,8 @@ services:
   # 後台管理服務 (Admin)
   clockin-admin:
     build:
-      context: ./clockin-admin
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./clockin-admin/Dockerfile
     container_name: clockin-admin
     depends_on:
       mysql:
