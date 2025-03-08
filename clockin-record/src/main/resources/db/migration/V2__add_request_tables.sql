@@ -42,17 +42,5 @@ CREATE TABLE leave_request (
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='請假申請表';
 
--- 在 sys_permission 表中添加請假和補卡相關權限
-INSERT INTO sys_permission (permission_name, permission_description) VALUES 
-('LEAVE_CREATE', '創建請假申請'),
-('LEAVE_UPDATE', '更新請假申請'),
-('LEAVE_VIEW', '查看請假申請'),
-('LEAVE_DELETE', '刪除請假申請'),
-('LEAVE_APPROVE', '審批請假申請'),
-('LEAVE_ADMIN', '請假申請管理'),
-('MAKEUP_CLOCK_IN_CREATE', '創建補卡申請'),
-('MAKEUP_CLOCK_IN_UPDATE', '更新補卡申請'),
-('MAKEUP_CLOCK_IN_VIEW', '查看補卡申請'),
-('MAKEUP_CLOCK_IN_DELETE', '刪除補卡申請'),
-('MAKEUP_CLOCK_IN_APPROVE', '審批補卡申請'),
-('MAKEUP_CLOCK_IN_ADMIN', '補卡申請管理');
+-- 注意：權限相關的插入操作應該在 auth 模塊中執行
+-- 已移除對 sys_permission 表的插入操作

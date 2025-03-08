@@ -21,21 +21,14 @@ spring:
       
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
   
-  # Flyway 配置
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
-    table: flyway_schema_history
-    encoding: UTF-8
-    validate-on-migrate: true
+  # Flyway 配置已移除
   
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
